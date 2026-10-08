@@ -1,0 +1,107 @@
+name: Build Hayat AI Android Debug APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build-debug-apk:
+    name: Build Android debug APK
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # This project compiles Android Java sources with Java 21.
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+
+      # This installs command-line tools/platform-tools and accepts Android SDK licenses.
+      - name: Set up Android SDK command-line tools
+        uses: android-actions/setup-android@v4
+
+      - name: Install Android API 36 and AGP-required build tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Installing SDK platform android-36 and AGP 8.13.0 default build-tools 35.0.0"
+          sdkmanager --install "platforms;android-36" "build-tools;35.0.0" "platform-tools"
+          echo "Installed Android SDK packages:"
+          sdkmanager --list_installed
+
+      - name: Install frontend dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! npm ci; then
+            echo "::error::npm ci failed while installing dependencies from package-lock.json"
+            exit 1
+          fi
+
+      - name: Build frontend assets
+        shell: bash
+        # Optional, non-secret repository variable. Leave unset to preserve the app's
+        # current default; set it only when a reachable agent server is available.
+        env:
+          VITE_AGENT_API_URL: ${{ vars.VITE_AGENT_API_URL }}
+        run: |
+          set -euo pipefail
+          if ! npm run build; then
+            echo "::error::npm run build failed; Android packaging cannot continue"
+            exit 1
+          fi
+
+      - name: Sync Capacitor Android project
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! npx cap sync android; then
+            echo "::error::Capacitor sync failed for the Android project"
+            exit 1
+          fi
+
+      - name: Assemble debug APK
+        shell: bash
+        working-directory: android
+        run: |
+          set -euo pipefail
+          if ! ./gradlew --no-daemon :app:assembleDebug; then
+            echo "::error::Gradle failed to assemble the Hayat AI debug APK"
+            exit 1
+          fi
+
+      - name: Verify debug APK exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk_path="android/app/build/outputs/apk/debug/app-debug.apk"
+          if [[ ! -s "$apk_path" ]]; then
+            echo "::error::Expected APK is missing or empty: $apk_path"
+            exit 1
+          fi
+          ls -lh "$apk_path"
+
+      - name: Upload debug APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hayat-ai-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14

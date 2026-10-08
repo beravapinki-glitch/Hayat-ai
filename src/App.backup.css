@@ -1,0 +1,291 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  background: #08090c;
+  color: #ffffff;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  min-height: 100vh;
+}
+
+button,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(70, 80, 255, 0.13),
+      transparent 35%
+    ),
+    #08090c;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: rgba(8, 9, 12, 0.92);
+  border-bottom: 1px solid #20232a;
+  backdrop-filter: blur(12px);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  background: linear-gradient(135deg, #6d5dfc, #00b8ff);
+  box-shadow: 0 8px 25px rgba(0, 160, 255, 0.2);
+}
+
+.title {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.status {
+  margin-top: 3px;
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 5px;
+  border-radius: 50%;
+  background: #36d399;
+}
+
+.clear-btn {
+  border: 1px solid #30343d;
+  border-radius: 10px;
+  padding: 8px 12px;
+  color: #ddd;
+  background: #14161b;
+}
+
+.chat {
+  width: min(900px, 100%);
+  margin: 0 auto;
+  flex: 1;
+  padding: 22px 14px 150px;
+}
+
+.message-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.user-row {
+  flex-direction: row-reverse;
+}
+
+.avatar {
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.assistant-avatar {
+  background: #1d2430;
+  color: #8bb7ff;
+}
+
+.user-avatar {
+  background: #303047;
+  color: #d4c9ff;
+}
+
+.message-content {
+  max-width: 82%;
+}
+
+.bubble {
+  padding: 12px 14px;
+  border-radius: 16px;
+  white-space: pre-wrap;
+  line-height: 1.5;
+  font-size: 15px;
+}
+
+.assistant-bubble {
+  background: #15181e;
+  border: 1px solid #252a33;
+  border-top-left-radius: 5px;
+}
+
+.user-bubble {
+  background: #4f46e5;
+  border-top-right-radius: 5px;
+}
+
+.message-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 5px;
+  color: #737986;
+  font-size: 10px;
+}
+
+.user-row .message-meta {
+  justify-content: flex-end;
+}
+
+.small-btn {
+  border: 0;
+  background: transparent;
+  color: #888;
+  padding: 1px 4px;
+}
+
+.quick-area {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 92px;
+  z-index: 5;
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  padding: 8px 12px;
+  background: linear-gradient(
+    transparent,
+    rgba(8, 9, 12, 0.97) 30%
+  );
+}
+
+.quick-btn {
+  flex: 0 0 auto;
+  border: 1px solid #2b3039;
+  border-radius: 18px;
+  padding: 8px 12px;
+  color: #cbd5e1;
+  background: #11141a;
+  font-size: 12px;
+}
+
+.composer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  padding: 10px 12px 12px;
+  background: rgba(8, 9, 12, 0.96);
+  border-top: 1px solid #20232a;
+  backdrop-filter: blur(15px);
+}
+
+.input-wrap {
+  width: min(900px, 100%);
+  margin: auto;
+  display: flex;
+  align-items: flex-end;
+  gap: 7px;
+  padding: 7px;
+  border: 1px solid #30343d;
+  border-radius: 18px;
+  background: #11141a;
+}
+
+textarea {
+  flex: 1;
+  min-height: 42px;
+  max-height: 120px;
+  resize: none;
+  border: 0;
+  outline: 0;
+  padding: 11px 8px;
+  color: #fff;
+  background: transparent;
+}
+
+textarea::placeholder {
+  color: #777e8b;
+}
+
+.mic-btn,
+.send-btn {
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+}
+
+.mic-btn {
+  background: #222630;
+  color: #fff;
+}
+
+.mic-btn.listening {
+  background: #dc2626;
+}
+
+.send-btn {
+  background: #5b4df5;
+  color: #fff;
+  font-size: 18px;
+}
+
+.footer-status {
+  width: min(900px, 100%);
+  margin: 5px auto 0;
+  text-align: center;
+  color: #69707c;
+  font-size: 10px;
+}
+
+@media (min-width: 700px) {
+  .chat {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+
+  .message-content {
+    max-width: 70%;
+  }
+}
