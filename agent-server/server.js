@@ -37,7 +37,11 @@ function getClient() {
   if (!process.env.OPENAI_API_KEY) {
     throw new Error("OpenAI is not configured. Set OPENAI_API_KEY in agent-server/.env.");
   }
-  if (!client) client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  if (!client) client = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+    timeout: 120000,
+    maxRetries: 1
+  });
   return client;
 }
 
@@ -431,6 +435,21 @@ app.post(
     });
   }
 );
+
+app.use((error, req, res, next) => {
+  if (res.headersSent) return next(error);
+
+  const status = Number(error?.status || error?.statusCode);
+  if (status === 400) {
+    return res.status(400).json({ ok: false, error: "Request body must contain valid JSON." });
+  }
+  if (status === 413) {
+    return res.status(413).json({ ok: false, error: "Request body is too large." });
+  }
+
+  console.error("REQUEST ERROR", error?.name || "Error");
+  return res.status(500).json({ ok: false, error: "The request could not be processed." });
+});
 
 app.listen(
   PORT,

@@ -7,6 +7,15 @@ dist/
 agent-server/.env
 agent-server/.env.*
 !agent-server/.env.example
+# Local signing material and private credentials.
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+key.properties
+**/secrets/
 android/.gradle/
 android/local.properties
 android/build/
